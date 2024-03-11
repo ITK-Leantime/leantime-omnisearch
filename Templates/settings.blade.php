@@ -21,7 +21,7 @@
                     <label>Projects (minutes)</label>
                 </div>
                 <div class="col-md-8">
-                    <input type="text" value="<?php echo $tpl->get('projectCacheExpiration'); ?>" name="projectCacheExpiration" />
+                    <input type="number" min="0" value="<?php echo (int) $tpl->get('projectCacheExpiration'); ?>" name="projectCacheExpiration" />
                 </div>
             </div>
             <div class="row">
@@ -29,7 +29,7 @@
                     <label>Tickets (minutes)</label>
                 </div>
                 <div class="col-md-8">
-                    <input type="text" value="<?php echo $tpl->get('ticketCacheExpiration'); ?>" name="ticketCacheExpiration" />
+                    <input type="number" min="0" value="<?php echo (int) $tpl->get('ticketCacheExpiration'); ?>" name="ticketCacheExpiration" />
                 </div>
             </div>
             <input type="submit" value="Save" id="saveBtn" />

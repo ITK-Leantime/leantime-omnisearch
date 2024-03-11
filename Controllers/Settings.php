@@ -14,44 +14,48 @@ use Leantime\Domain\Setting\Repositories\Setting as SettingRepository;
  * @package    leantime
  * @subpackage plugins
  */
-class Settings extends Controller {
-
-  private SettingRepository $settingsRepo;
+class Settings extends Controller
+{
+    private SettingRepository $settingsRepo;
 
   /**
    * constructor
    * @access public
+   *
+   * @return void
    */
-  public function init(
-    SettingRepository $settingsRepo,
-  ) {
-    $this->settingsRepo = $settingsRepo;
-  }
+    public function init(SettingRepository $settingsRepo): void
+    {
+        $this->settingsRepo = $settingsRepo;
+    }
 
   /**
    * get method
-   * @return void
+   *
+   * @return Response
    */
-  public function get(): Response {
-    $projectCacheExpiration = $this->settingsRepo->getSetting("omnisearchsettings.projectscache") ?: '2400';
-    $ticketCacheExpiration = $this->settingsRepo->getSetting("omnisearchsettings.ticketscache") ?: '1200';
+    public function get(): Response
+    {
+        $projectCacheExpiration = (int) ($this->settingsRepo->getSetting('omnisearchsettings.projectscache') ?: 2400);
+        $ticketCacheExpiration = (int) ($this->settingsRepo->getSetting('omnisearchsettings.ticketscache') ?: 1200);
 
-    $this->tpl->assign("projectCacheExpiration", $projectCacheExpiration);
-    $this->tpl->assign("ticketCacheExpiration", $ticketCacheExpiration);
+        $this->tpl->assign('projectCacheExpiration', $projectCacheExpiration);
+        $this->tpl->assign('ticketCacheExpiration', $ticketCacheExpiration);
 
-    return $this->tpl->display("omniSearch.settings");
-  }
+        return $this->tpl->display('omniSearch.settings');
+    }
 
   /**
    * post method
    * @param array $params
-   * @return void
+   * @return Response
    */
-  public function post(array $params): RedirectResponse {
-    $this->settingsRepo->saveSetting("omnisearchsettings.projectscache", htmlspecialchars(addslashes($params['projectCacheExpiration'])));
-    $this->settingsRepo->saveSetting("omnisearchsettings.ticketscache", htmlspecialchars(addslashes($params['ticketCacheExpiration'])));
-    $this->tpl->setNotification("The settings were successfully saved.", "success");
+    public function post(array $params): RedirectResponse
+    {
+        $this->settingsRepo->saveSetting('omnisearchsettings.projectscache', (int) ($params['projectCacheExpiration'] ?? 0));
+        $this->settingsRepo->saveSetting('omnisearchsettings.ticketscache', (int) ($params['ticketCacheExpiration'] ?? 0));
+        $this->tpl->setNotification('The settings were successfully saved.', 'success');
 
-    return Frontcontroller::redirect(BASE_URL . "/OmniSearch/settings");
-  }
+        return Frontcontroller::redirect(BASE_URL . '/OmniSearch/settings');
+    }
 }

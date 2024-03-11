@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Used `APP_ROOT` for installing assets.
+- Defined and applied coding standards.
 
 ## [1.2.0] 2024-02-12
 
