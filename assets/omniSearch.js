@@ -4,11 +4,6 @@ import './omniSearch.css';
 import FuzzySearch from 'fuzzy-search';
 
 $(document).ready(function ($) {
-  const cacheTimeouts = {
-    omnisearch_projects: parseFloat(omniSearch.settings.projectCacheExpiration),
-    omnisearch_tickets: parseFloat(omniSearch.settings.ticketCacheExpiration),
-  };
-
   window.searchSettings = getSearchSettings(omniSearch.settings.searchSettings);
 
   const allComments = JSON.parse(omniSearch.settings.allComments);
@@ -24,9 +19,6 @@ $(document).ready(function ($) {
   let isFetching = false; // Is data being fetched
   let isVisible = false; // Is overlay visible
 
-  removeFromCache('tickets');
-  removeFromCache('projects');
-  // Fetch new data if cache is stale
   fetchOmnisearchData();
 
   // Append overlay
@@ -562,41 +554,28 @@ $(document).ready(function ($) {
   async function fetchOmnisearchData() {
     let projectPromise;
     let ticketPromise;
-    let projectCacheData = getCacheData('omnisearch_projects');
     isFetching = true;
 
-    if (projectCacheData) {
-      projectPromise = Promise.resolve(projectCacheData);
-    } else {
-      projectPromise = getAllProjects().then((data) => {
-        var projects = data.result;
-        const projectGroup = {
-          id: 'project',
-          text: 'Projekter',
-          children: [],
-          index: 1,
+    projectPromise = getAllProjects().then((data) => {
+      var projects = data.result;
+      const projectGroup = {
+        id: 'project',
+        text: 'Projekter',
+        children: [],
+        index: 1,
+      };
+      projects.forEach((project) => {
+        let option = {
+          id: project.id,
+          text: project.name,
+          type: 'project',
+          client: project.clientName,
         };
-        projects.forEach((project) => {
-          let option = {
-            id: project.id,
-            text: project.name,
-            type: 'project',
-            client: project.clientName,
-          };
-          projectGroup.children.push(option);
-        });
-        writeToCache('omnisearch_projects', {
-          data: projectGroup,
-          expiration: Date.now(),
-        });
-        return projectGroup;
+        projectGroup.children.push(option);
       });
-    }
+      return projectGroup;
+    });
 
-    let ticketCacheData = getCacheData('omnisearch_tickets');
-    if (ticketCacheData) {
-      ticketPromise = Promise.resolve(ticketCacheData);
-    } else {
       ticketPromise = getAllTickets().then((data) => {
         var result = data.result;
         let tickets = result.filter(
@@ -636,13 +615,8 @@ $(document).ready(function ($) {
           (a, b) => Number(a.isDone) - Number(b.isDone)
         );
         ticketGroup.children = sortedByDone;
-        writeToCache('omnisearch_tickets', {
-          data: ticketGroup,
-          expiration: Date.now(),
-        });
         return ticketGroup;
       });
-    }
 
     const promises = [projectPromise, ticketPromise];
     const results = await Promise.allSettled(promises);
@@ -659,60 +633,15 @@ $(document).ready(function ($) {
 
   function setOmnisearchData() {
     omniSelectElement.addClass('loading');
-    if (isFetching) {
-      setTimeout(() => {
-        // If already fetching, recall for cached result.
-        setOmnisearchData();
-      }, 500);
-    } else {
       fetchOmnisearchData().then((availableTags) => {
         isFetching = false;
         reinitOmniSearchWithData(availableTags);
         omniSelectElement.removeClass('loading');
-        populateLastUpdated();
       });
-    }
   }
 
   function restoreString(htmlString) {
     return $('<div>').html(htmlString).text();
-  }
-
-  function populateLastUpdated() {
-    let projectLastUpdated = readFromCache('omnisearch_projects').expiration;
-    let ticketsLastUpdated = readFromCache('omnisearch_tickets').expiration;
-
-    // Convert ms to minutes
-    let projectsLastUpdatedElement =
-      '<span>Projekter: ' +
-      Math.round((Date.now() - projectLastUpdated) / 60000) +
-      ' min siden.</span>';
-    let ticketsLastUpdatedElement =
-      '<span>To-Do: ' +
-      Math.round((Date.now() - ticketsLastUpdated) / 60000) +
-      ' min siden.</span>';
-    omniSelectPanelElement.html(
-      '<div><button id="refreshBtn"><span></i>Opdater data</span></button></div><div>' +
-        projectsLastUpdatedElement +
-        ticketsLastUpdatedElement +
-        '</div>'
-    );
-
-    $('#refreshBtn').on('click', function (e) {
-      if (isFetching) {
-        return false;
-      }
-      $(this)
-        .children('span')
-        .html('<i class="fa-solid fa-arrows-rotate fa-spin"></i>Opdaterer');
-      refreshOmniSearch();
-    });
-  }
-
-  function refreshOmniSearch() {
-    removeFromCache('omnisearch_projects');
-    removeFromCache('omnisearch_tickets');
-    setOmnisearchData();
   }
 
   function matcher(params, data) {
@@ -762,32 +691,5 @@ $(document).ready(function ($) {
     const sortedResults = result.sort((a, b) => b.score - a.score);
 
     return { ...data, children: sortedResults };
-  }
-
-  function removeFromCache(item) {
-    localStorage.removeItem(item);
-  }
-
-  function writeToCache(item, data) {
-    localStorage.setItem(item, JSON.stringify(data));
-  }
-
-  function readFromCache(item) {
-    return JSON.parse(localStorage.getItem(item)) || null;
-  }
-
-  function getCacheData(item) {
-    const cacheData = readFromCache(item);
-
-    if (!cacheData) {
-      return false;
-    }
-
-    const cacheDataExpiration = cacheData.expiration ?? 0;
-    // Convert minutes to ms
-    const cacheTimeoutMs = cacheTimeouts[item] * 60000;
-    const cacheDataExpired = Date.now() - cacheDataExpiration > cacheTimeoutMs;
-
-    return cacheDataExpired ? false : cacheData.data;
   }
 });
