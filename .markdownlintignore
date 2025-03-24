@@ -1,0 +1,7 @@
+# https://github.com/igorshubovych/markdownlint-cli?tab=readme-ov-file#ignoring-files
+vendor
+node_modules
+
+# Local Variables:
+# mode: gitignore
+# End:
