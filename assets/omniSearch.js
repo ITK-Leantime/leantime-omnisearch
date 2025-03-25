@@ -418,7 +418,6 @@ $(document).ready(function ($) {
             const readableFields = window.searchSettings.map((field) =>
               field.split('_').pop()
             );
-            console.log(readableFields);
             return {
               q: params.term,
               searchInDescription: readableFields.includes('beskrivelse'),
