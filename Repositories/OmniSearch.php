@@ -59,10 +59,10 @@ class OmniSearch
 
         if ($searchInComments) {
             // Additional select, left join and where clause added for comments
-            $selectMore = 'comment.text, ';
+            $selectMore = 'comment.text, comment.userId, ';
             $jointComments = 'LEFT JOIN zp_comment as comment ON ticket.id = comment.moduleId';
             $whereTerm = $whereTerm . ' OR comment.text LIKE CONCAT("%", :searchTerm, "%")';
-            $userIdWhere = 'AND comment.userId = :userId';
+            $userIdWhere = ' comment.userId = :userId AND ';
         }
 
         $sql = 'SELECT ' . $selectMore . 'ticket.id,
@@ -72,7 +72,7 @@ class OmniSearch
             ticket.projectId,
             ticket.description,
             p.name as projectName,
-            ticket.status,
+            ticket.status
         FROM zp_tickets as ticket
         ' . $jointComments . '
         ' . $joinTimesheet . '
