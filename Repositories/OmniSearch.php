@@ -36,6 +36,7 @@ class OmniSearch
     {
         // Empty where, so if neither of the additional search params are true, nothing will be added
         $whereTerm = '';
+        $userIdWhere = '';
 
         // Empty join clauses, so if neither of the additional search params are true, the tables will not be joined
         $joinTimesheet = '';
@@ -61,28 +62,27 @@ class OmniSearch
             $selectMore = 'comment.text, ';
             $jointComments = 'LEFT JOIN zp_comment as comment ON ticket.id = comment.moduleId';
             $whereTerm = $whereTerm . ' OR comment.text LIKE CONCAT("%", :searchTerm, "%")';
+            $userIdWhere = 'AND comment.userId = :userId';
         }
 
-            $sql = 'SELECT ' . $selectMore . 'ticket.id,
-                ticket.headline,
-                LOWER(ticket.type) as type,
-                ticket.tags,
-                ticket.projectId,
-                ticket.description,
-                p.name as projectName,
-                ticket.editorId,
-                ticket.hourRemaining,
-                ticket.status,
-                ticket.date
+        $sql = 'SELECT ' . $selectMore . 'ticket.id,
+            ticket.headline,
+            LOWER(ticket.type) as type,
+            ticket.tags,
+            ticket.projectId,
+            ticket.description,
+            p.name as projectName,
+            ticket.status,
         FROM zp_tickets as ticket
         ' . $jointComments . '
         ' . $joinTimesheet . '
         LEFT JOIN zp_projects p ON ticket.projectId = p.id
-        WHERE ticket.type = "task" AND (ticket.id LIKE CONCAT("%", :searchTerm, "%") OR ticket.tags LIKE CONCAT("%", :searchTerm, "%") OR ticket.headline LIKE CONCAT("%", :searchTerm, "%")' . $whereTerm . ')
-        ORDER BY ticket.status ASC';
+        WHERE '.$userIdWhere.' ticket.type = "task" AND (ticket.id LIKE CONCAT("%", :searchTerm, "%") OR ticket.tags LIKE CONCAT("%", :searchTerm, "%") OR ticket.headline LIKE CONCAT("%", :searchTerm, "%")' . $whereTerm . ')
+        ORDER BY ticket.status DESC';
 
         $stmn = $this->db->database->prepare($sql);
         $stmn->bindValue(':searchTerm', $searchTerm, PDO::PARAM_STR);
+        $stmn->bindValue(':userId', session('userdata.id'), PDO::PARAM_INT);
         $stmn->execute();
         $values = $stmn->fetchAll();
         $stmn->closeCursor();
