@@ -2,7 +2,7 @@ node_modules
 composer.lock
 package-lock.json
 vendor
-# dist/*
+dist/*
 .DS_Store
 
 # Release
