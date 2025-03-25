@@ -77,7 +77,7 @@ class OmniSearch
         ' . $jointComments . '
         ' . $joinTimesheet . '
         LEFT JOIN zp_projects p ON ticket.projectId = p.id
-        WHERE '.$userIdWhere.' ticket.type = "task" AND (ticket.id LIKE CONCAT("%", :searchTerm, "%") OR ticket.tags LIKE CONCAT("%", :searchTerm, "%") OR ticket.headline LIKE CONCAT("%", :searchTerm, "%")' . $whereTerm . ')
+        WHERE ' . $userIdWhere . ' ticket.type = "task" AND (ticket.id LIKE CONCAT("%", :searchTerm, "%") OR ticket.tags LIKE CONCAT("%", :searchTerm, "%") OR ticket.headline LIKE CONCAT("%", :searchTerm, "%")' . $whereTerm . ')
         ORDER BY ticket.status DESC';
 
         $stmn = $this->db->database->prepare($sql);
