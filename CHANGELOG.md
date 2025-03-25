@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-35](https://github.com/ITK-Leantime/leantime-omnisearch/pull/35)
+  * Upgrade omnisearch plugin leantime 3 4 3
+  * Added the itkdev markdownlinter (and markdownlinter ignore file)
+  * Removed use of the api
+  * Updated leantime in composer and removed rimi repository
+  * Removed dist files from github
+
 ## [2.1.0] - 2025-01-28
 
 * [PR-33](https://github.com/ITK-Leantime/leantime-omnisearch/pull/33)
