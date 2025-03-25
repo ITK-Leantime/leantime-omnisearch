@@ -33,6 +33,9 @@
   --itk-transition-time: 0.3s;
   --itk-transition-easing: ease-in-out;
 }
+.select2-container--default .select2-search--inline .select2-search__field {
+  padding-left: 28px;
+}
 
 body.prevent-scroll {
   overflow: hidden !important;

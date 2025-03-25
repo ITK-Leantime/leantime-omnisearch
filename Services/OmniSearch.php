@@ -31,6 +31,50 @@ final class OmniSearch
     ];
 
     /**
+     * Retrieves all tickets from the omnisearch service and returns them formatted.
+     *
+     * @return array<int<0, max>, array<string, mixed>> the list of tickets or an empty array.
+     */
+    public function getTickets(string $searchTerm, bool $searchInDescription, bool $searchInTimeregistrations, bool $searchInComments): array
+    {
+        $tickets = $this->omniSearchRepository->getTickets($searchTerm, $searchInDescription, $searchInTimeregistrations, $searchInComments);
+
+        $formattedTickets = array_map(function ($ticket) {
+                return [
+                    'id' => $ticket['id'],
+                    'text' => $ticket['headline'],
+                    'status' => $ticket['status'],
+                    'type' => $ticket['type'],
+                    'tags' => $ticket['tags'],
+                    'projectName' => $ticket['projectName'],
+                    'description' => $ticket['description'],
+                ];
+        }, $tickets);
+
+        return $formattedTickets;
+    }
+
+    /**
+     * Retrieves all projects from the omnisearch repository and returns them formatted.
+     *
+     * @return array<int<0, max>, array<string, mixed>> the list of tickets or an empty array.
+     */
+    public function getProjects(string $searchTerm): array
+    {
+        $projects = $this->omniSearchRepository->getProjects($searchTerm);
+
+        $formattedProjects = array_map(function ($project) {
+                return [
+                    'id' => $project['id'],
+                    'text' => $project['name'],
+                    'type' => 'project',
+                ];
+        }, $projects);
+
+        return $formattedProjects;
+    }
+
+    /**
      * Install plugin.
      *
      * @return void
@@ -57,25 +101,5 @@ final class OmniSearch
                 unlink($target);
             }
         }
-    }
-
-    /**
-     * Retrieves all comments from the repository
-     *
-     * @return array<int, string> The list of all comments
-     */
-    public function getAllComments(): array
-    {
-        return $this->omniSearchRepository->getAllComments();
-    }
-
-    /**
-     * Retrieves all timelog descriptions.
-     *
-     * @return array<string, string> An array containing all timelog descriptions.
-     */
-    public function getAllTimelogDescriptions(): array
-    {
-        return $this->omniSearchRepository->getAllTimelogDescriptions();
     }
 }
