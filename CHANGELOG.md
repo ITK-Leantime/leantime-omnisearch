@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2025-03-27
+
 * [PR-35](https://github.com/ITK-Leantime/leantime-omnisearch/pull/35)
   * Upgrade omnisearch plugin leantime 3 4 3
   * Added the itkdev markdownlinter (and markdownlinter ignore file)
@@ -114,7 +116,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added fuzzy search.
 * Install, uninstall script.
 
-[Unreleased]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/2.1.0...HEAD
+[Unreleased]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/2.1.0...3.0.0
 [2.1.0]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/1.2.7...2.0.0
 [1.2.7]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/1.2.3...1.2.7
