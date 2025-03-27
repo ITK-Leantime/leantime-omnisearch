@@ -41,15 +41,19 @@ class GetLanguageAssets
         }
 
         // @phpstan-ignore-next-line
-        if (($language = session('usersettings.language') ?? $this->config->language) !== 'en-US') {
-            if (! Cache::store('installation')->has('omniSearch.language.' . $language)) {
+        if (($language = $this->config->language ?? session('usersettings.language')) !== 'en-US') {
+            if (!Cache::store('installation')->has('timeTable.language.' . $language)) {
+                $languageIniPath = __DIR__ . '/../Language/' . $language . '.ini';
+                if (!file_exists($languageIniPath)) {
+                    $languageIniPath = __DIR__ . '/../Language/en-US.ini';
+                }
                 Cache::store('installation')->put(
-                    'omniSearch.language.' . $language,
-                    parse_ini_file(__DIR__ . '/../Language/' . $language . '.ini', true)
+                    'timeTable.language.' . $language,
+                    parse_ini_file($languageIniPath, true)
                 );
             }
 
-            $languageArray = array_merge($languageArray, Cache::store('installation')->get('omniSearch.language.' . $language));
+            $languageArray = array_merge($languageArray, Cache::store('installation')->get('timeTable.language.' . $language));
         }
 
         Cache::put('omniSearch.languageArray', $languageArray);
