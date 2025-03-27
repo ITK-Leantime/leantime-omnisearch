@@ -26,83 +26,92 @@ class OmniSearch
     }
 
     /**
-     * Retrieves all comments grouped by module ID, concatenated with user names.
+     * getTickets - Retrieves tickets, filters them based on their the search ,
+     * depending on input it joins with comments and timesheets to search in descriptions.
      *
-     * @return array<int, string> An associative array where keys are module IDs and values are concatenated comments and user names.
+     * @access public
+     * @return array<int<0, max>,mixed> An array of filtered tickets with their associated details.
      */
-    public function getAllComments(): array
+    public function getTickets(string $searchTerm, bool $searchInDescription, bool $searchInTimeregistrations, bool $searchInComments): array
     {
-        $sql = 'SELECT
-                comments.moduleId,
-                comments.text,
-                users.firstName,
-                users.lastName
-            FROM zp_comment AS comments
-            JOIN zp_user AS users ON comments.userId = users.id';
+        // Empty where, so if neither of the additional search params are true, nothing will be added
+        $whereTerm = '';
+        $userIdWhere = '';
+
+        // Empty join clauses, so if neither of the additional search params are true, the tables will not be joined
+        $joinTimesheet = '';
+        $jointComments = '';
+
+        // Selectmore is to make sure we also select the stuff to search in in the select clause.
+        $selectMore = '';
+
+        if ($searchInDescription) {
+            // If we are to search in the description, this can be added, as the select already has ticket description
+            $whereTerm = ' OR ticket.description LIKE CONCAT("%", :searchTerm, "%")';
+        }
+
+        if ($searchInTimeregistrations) {
+            // Additional select, left join and where clause added for timesheets
+            $selectMore = 'timesheet.description, ';
+            $joinTimesheet = 'LEFT JOIN zp_timesheets as timesheet ON ticket.id = timesheet.ticketId';
+            $whereTerm = $whereTerm . ' OR timesheet.description LIKE CONCAT("%", :searchTerm, "%")';
+        }
+
+        if ($searchInComments) {
+            // Additional select, left join and where clause added for comments
+            $selectMore = 'comment.text, comment.userId, ';
+            $jointComments = 'LEFT JOIN zp_comment as comment ON ticket.id = comment.moduleId';
+            $whereTerm = $whereTerm . ' OR comment.text LIKE CONCAT("%", :searchTerm, "%")';
+            $userIdWhere = ' comment.userId = :userId AND ';
+        }
+
+        $sql = 'SELECT ' . $selectMore . 'ticket.id,
+            ticket.headline,
+            LOWER(ticket.type) as type,
+            ticket.tags,
+            ticket.projectId,
+            ticket.description,
+            p.name as projectName,
+            ticket.status
+        FROM zp_tickets as ticket
+        ' . $jointComments . '
+        ' . $joinTimesheet . '
+        LEFT JOIN zp_projects p ON ticket.projectId = p.id
+        WHERE ' . $userIdWhere . ' ticket.type = "task" AND (ticket.id LIKE CONCAT("%", :searchTerm, "%") OR ticket.tags LIKE CONCAT("%", :searchTerm, "%") OR ticket.headline LIKE CONCAT("%", :searchTerm, "%")' . $whereTerm . ')
+        ORDER BY ticket.status DESC';
 
         $stmn = $this->db->database->prepare($sql);
+        $stmn->bindValue(':searchTerm', $searchTerm, PDO::PARAM_STR);
+        $stmn->bindValue(':userId', session('userdata.id'), PDO::PARAM_INT);
         $stmn->execute();
-
-        $comments = [];
-        $results = $stmn->fetchAll(PDO::FETCH_ASSOC);
+        $values = $stmn->fetchAll();
         $stmn->closeCursor();
 
-        foreach ($results as $row) {
-            $moduleId = $row['moduleId'];
-            if (!isset($comments[$moduleId])) {
-                $comments[$moduleId] = '';
-            }
-
-            // Concatenate the text and name
-            $text = strip_tags(html_entity_decode($row['text'], ENT_QUOTES, 'UTF-8'));
-            $name = $row['firstName'] . ' ' . $row['lastName'];
-            $comments[$moduleId] .= $text . ' ' . $name . ' ';
-        }
-
-        // Trim extra spaces at the end
-        foreach ($comments as $moduleId => $concatenatedComments) {
-            $comments[$moduleId] = trim($concatenatedComments);
-        }
-
-        return $comments;
+        return $values;
     }
 
     /**
-     * Retrieves all unique timelog descriptions grouped by ticket ID.
-     * Each description is split into unique words and then reconstructed as a string.
+     * getProjects - Retrieves projects, filters them based on their name or id
      *
-     * @return array<int|string, string> An associative array where the keys are ticket IDs and the values are unique concatenated words from their respective timelog descriptions.
+     * @access public
+     * @return array<int<0, max>,mixed> An array of filtered tickets with their associated details.
      */
-    public function getAllTimelogDescriptions(): array
+    public function getProjects(string $searchTerm): array
     {
-        $sql = 'SELECT
-            timesheets.ticketId,
-            timesheets.description
-        FROM zp_timesheets AS timesheets';
+            $sql = 'SELECT
+            project.id,
+            project.name,
+            project.modified
+        FROM zp_projects as project
+        WHERE (project.id LIKE CONCAT("%", :searchTerm, "%") OR project.name LIKE CONCAT("%", :searchTerm, "%"))
+        ORDER BY project.modified ASC';
 
-        $stmt = $this->db->database->prepare($sql);
-        $stmt->execute();
+        $stmn = $this->db->database->prepare($sql);
+        $stmn->bindValue(':searchTerm', $searchTerm, PDO::PARAM_STR);
+        $stmn->execute();
+        $values = $stmn->fetchAll();
+        $stmn->closeCursor();
 
-        $timelogDescriptions = [];
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmt->closeCursor();
-
-        foreach ($results as $row) {
-            $ticketId = $row['ticketId'];
-            if (!isset($timelogDescriptions[$ticketId])) {
-                $timelogDescriptions[$ticketId] = [];
-            }
-
-            // Split the description into words and merge unique words
-            $words = preg_split('/\s+/', $row['description']);
-            $timelogDescriptions[$ticketId] = array_unique(array_merge($timelogDescriptions[$ticketId], $words));
-        }
-
-        // Convert arrays of words back to strings
-        foreach ($timelogDescriptions as $ticketId => $wordsArray) {
-            $timelogDescriptions[$ticketId] = implode(' ', $wordsArray);
-        }
-
-        return $timelogDescriptions;
+        return $values;
     }
 }

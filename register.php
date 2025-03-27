@@ -15,13 +15,9 @@ EventDispatcher::add_event_listener(
     'leantime.core.template.tpl.*.afterScriptLibTags',
     function () {
         if (session('userdata.id') !== null) {
-            $allComments = json_encode(app()->make(OmniSearchService::class)->getAllComments());
-            $userId  = session('userdata.id'); // you need to set the value for $userId
-            $projectCacheExpiration = app()->make(SettingsService::class)->getSetting('omnisearchsettings.projectscache') ?: '60';
-            $ticketCacheExpiration = app()->make(SettingsService::class)->getSetting('omnisearchsettings.ticketscache') ?: '30';
-            $searchSettings =  session('usersettings.omnisearch') ?: [];
-            $allTimelogDescriptions = json_encode(app()->make(OmniSearchService::class)->getAllTimelogDescriptions());
-            echo '<script>const omniSearch = ' . json_encode(['settings' => ['userId' => $userId, 'projectCacheExpiration' => $projectCacheExpiration, 'ticketCacheExpiration' => $ticketCacheExpiration, 'allComments' => $allComments, 'allTimelogDescription' => $allTimelogDescriptions, 'searchSettings' => $searchSettings]]) . '</script>';
+            $userId  = session('userdata.id');
+            $searchSettings = session('usersettings.omnisearch') ?: [];
+            echo '<script>const omniSearch = ' . json_encode(['settings' => ['userId' => $userId, 'searchSettings' => $searchSettings]]) . '</script>';
             echo '<script src="/dist/js/omniSearch.v' . urlencode('%%VERSION%%') . '.js"></script>';
         }
     },
