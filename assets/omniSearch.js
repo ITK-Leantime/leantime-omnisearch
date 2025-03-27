@@ -446,6 +446,11 @@ $(document).ready(function ($) {
           },
           cache: true,
         },
+        language: {
+          searching: function() {
+            return "Søger... Hvis det tager lang tid, kan du overveje at slå søgning i tidsregistreringer fra.";
+          },
+        },
         placeholder: getOmnisearchPreviewText(),
         minimumInputLength: 3,
         templateResult: function (data) {
