@@ -12,8 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-38](https://github.com/ITK-Leantime/leantime-omnisearch/pull/38)
   feature/remove dist in gitignore do to build script
 
-## [3.0.0] - 2025-03-27
-
 * [PR-35](https://github.com/ITK-Leantime/leantime-omnisearch/pull/35)
   * Upgrade omnisearch plugin leantime 3 4 3
   * Added the itkdev markdownlinter (and markdownlinter ignore file)
