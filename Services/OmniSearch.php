@@ -78,13 +78,27 @@ final class OmniSearch
      * Install plugin.
      *
      * @return void
+     * @throws \Exception
      */
     public function install(): void
     {
-        foreach (static::$assets as $source => $target) {
-            if (file_exists($target)) {
+        foreach (OmniSearch::$assets as $source => $target) {
+            // Check if the target path is a directory
+            if (is_dir($target)) {
+                throw new \Exception("Target is a directory. Symlink requires a file path: {$target}");
+            }
+
+            // Ensure the target directory exists
+            if (!is_dir(dirname($target))) {
+                mkdir(dirname($target), 0755, true);
+            }
+
+            // Remove existing target if a file or symlink
+            if (file_exists($target) || is_link($target)) {
                 unlink($target);
             }
+
+            // Create the symlink
             symlink($source, $target);
         }
     }

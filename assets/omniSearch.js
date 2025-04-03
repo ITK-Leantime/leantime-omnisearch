@@ -447,8 +447,8 @@ $(document).ready(function ($) {
           cache: true,
         },
         language: {
-          searching: function() {
-            return "Søger... Hvis det tager lang tid, kan du overveje at slå søgning i tidsregistreringer fra.";
+          searching: function () {
+            return 'Søger... Hvis det tager lang tid, kan du overveje at slå søgning i tidsregistreringer fra.';
           },
         },
         placeholder: getOmnisearchPreviewText(),
@@ -527,7 +527,7 @@ $(document).ready(function ($) {
     });
 
     setTimeout(() => {
-        $('body .select2-search__field').focus();
+      $('body .select2-search__field').focus();
 
       const pseudoWidth = window
         .getComputedStyle($('.select2.select2-container')[0], '::after')
