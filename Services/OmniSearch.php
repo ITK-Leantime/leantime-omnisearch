@@ -82,7 +82,6 @@ final class OmniSearch
     public function install(): void
     {
         foreach (static::$assets as $source => $target) {
-
             if (file_exists($target)) {
                 unlink($target);
             }
