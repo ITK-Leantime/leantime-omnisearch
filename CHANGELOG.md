@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-41](https://github.com/ITK-Leantime/leantime-omnisearch/pull/41)
+  Added subtask and bug to searched ticket types
+  Added autofocus to search field post init
+
 ## [3.0.0] - 2025-03-28
 
 * [PR-38](https://github.com/ITK-Leantime/leantime-omnisearch/pull/38)
