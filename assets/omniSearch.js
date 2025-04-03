@@ -231,6 +231,8 @@ $(document).ready(function ($) {
               break;
 
             case 'task':
+            case 'subtask':
+            case 'bug':
               $('.selected-value').text(data.text);
               reinitOmniSearchForType('task', data);
               break;
@@ -280,6 +282,8 @@ $(document).ready(function ($) {
         const { text } = e.params.data;
         switch (selection.type) {
           case 'task':
+          case 'subtask':
+          case 'bug':
             $(omniSelectElement)
               .next('.select2.select2-container')
               .attr('data-visible-selected', `To-do / ${text} /`);
@@ -317,6 +321,8 @@ $(document).ready(function ($) {
   function reinitOmniSearchForType(type, data) {
     switch (type) {
       case 'task':
+      case 'subtask':
+      case 'bug':
         reinitOmniSearchWithData([
           {
             id: '',
@@ -447,8 +453,8 @@ $(document).ready(function ($) {
           cache: true,
         },
         language: {
-          searching: function() {
-            return "Søger... Hvis det tager lang tid, kan du overveje at slå søgning i tidsregistreringer fra.";
+          searching: function () {
+            return 'Søger... Hvis det tager lang tid, kan du overveje at slå søgning i tidsregistreringer fra.';
           },
         },
         placeholder: getOmnisearchPreviewText(),
@@ -527,6 +533,8 @@ $(document).ready(function ($) {
     });
 
     setTimeout(() => {
+      $('body .select2-search__field').focus();
+
       const pseudoWidth = window
         .getComputedStyle($('.select2.select2-container')[0], '::after')
         .getPropertyValue('width');
