@@ -527,6 +527,8 @@ $(document).ready(function ($) {
     });
 
     setTimeout(() => {
+        $('body .select2-search__field').focus();
+
       const pseudoWidth = window
         .getComputedStyle($('.select2.select2-container')[0], '::after')
         .getPropertyValue('width');
