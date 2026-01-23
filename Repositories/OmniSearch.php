@@ -108,5 +108,4 @@ class OmniSearch
             ->get()
             ->toArray();
     }
-
 }
