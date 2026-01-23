@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.2] - 2026-01-23
+
 * [PR-43](https://github.com/ITK-Leantime/leantime-omnisearch/pull/43)
   Scope assets to only affect plugin code.
 
@@ -128,7 +130,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added fuzzy search.
 * Install, uninstall script.
 
-[Unreleased]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/3.0.1...HEAD
+[Unreleased]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/3.0.2...HEAD
+[3.0.2]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/3.0.1...3.0.2
 [3.0.1]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/2.1.0...3.0.0
 [2.1.0]: https://github.com/ITK-Leantime/leantime-omnisearch/compare/2.0.0...2.1.0

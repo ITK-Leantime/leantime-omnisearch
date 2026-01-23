@@ -3,7 +3,7 @@
     "description": "Enables a site-wide shortcut tool to access projects and todos in a faster manner. When enabled, press the [period key] and search away!",
     "license": "MIT",
     "type": "leantime-plugin",
-    "version": "2.1.0",
+    "version": "3.0.2",
     "authors": [
         {
             "name": "Mikkel Ricky",
