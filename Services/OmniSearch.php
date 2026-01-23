@@ -49,7 +49,7 @@ final class OmniSearch
         );
 
         return array_map(function ($ticket) {
-            $ticket = (array) $ticket; // 👈 FIX
+            $ticket = (array) $ticket;
 
             return [
                 'id' => $ticket['id'] ?? null,
@@ -73,7 +73,7 @@ final class OmniSearch
         $projects = $this->omniSearchRepository->getProjects($searchTerm);
 
         return array_map(function ($project) {
-            $project = (array) $project; // 👈 FIX
+            $project = (array) $project;
 
             return [
                 'id' => $project['id'] ?? null,

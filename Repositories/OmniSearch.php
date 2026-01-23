@@ -3,12 +3,19 @@
 namespace Leantime\Plugins\OmniSearch\Repositories;
 
 use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\DB;
+use Leantime\Core\Db\Db;
+use Leantime\Core\Db\Db as DbCore;
 
+/**
+ * OmniSearch Repository - Handles database queries relevant to OmniSearch.
+ */
 class OmniSearch
 {
+    private ?DbCore $db = null;
     /**
      * Executes a database query using the specified database connection.
+     *
+     * @return Builder Returns an instance of the query builder.
      */
     private function query(): Builder
     {
@@ -16,9 +23,11 @@ class OmniSearch
     }
 
     /**
-     * Retrieves tickets filtered by search term and optional related data.
+     * getTickets - Retrieves tickets, filters them based on their the search ,
+     * depending on input it joins with comments and timesheets to search in descriptions.
      *
-     * @return array<int, mixed>
+     * @access public
+     * @return array<int<0, max>,mixed> An array of filtered tickets with their associated details.
      */
     public function getTickets(
         string $searchTerm,
@@ -29,80 +38,61 @@ class OmniSearch
         $query = $this->query()
             ->from('zp_tickets AS ticket')
             ->select([
-                'ticket.id',
+                app('db')->connection()->raw('DISTINCT ticket.id'),
                 'ticket.headline',
-                DB::raw('LOWER(ticket.type) as type'),
+                app('db')->connection()->raw('LOWER(ticket.type) AS type'),
                 'ticket.tags',
                 'ticket.projectId',
                 'ticket.description',
-                'p.name as projectName',
+                'p.name AS projectName',
                 'ticket.status',
             ])
             ->leftJoin('zp_projects AS p', 'ticket.projectId', '=', 'p.id')
-            ->whereIn('ticket.type', ['task', 'subtask', 'bug']);
+            ->whereIn('ticket.type', ['task', 'subtask', 'bug'])
+            ->where(function ($q) use ($searchTerm, $searchInDescription, $searchInTimeregistrations, $searchInComments) {
 
-        /**
-         * Optional joins + selects
-         */
-        if ($searchInTimeregistrations) {
-            $query
-                ->leftJoin('zp_timesheets AS timesheet', 'ticket.id', '=', 'timesheet.ticketId')
-                ->addSelect('timesheet.description AS timesheetDescription');
-        }
+                $q->where('ticket.id', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('ticket.tags', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('ticket.headline', 'LIKE', '%' . $searchTerm . '%');
 
-        if ($searchInComments) {
-            $query
-                ->leftJoin('zp_comment AS comment', 'ticket.id', '=', 'comment.moduleId')
-                ->addSelect([
-                    'comment.text AS commentText',
-                    'comment.userId AS commentUserId',
-                ])
-                ->where('comment.userId', '=', session('userdata.id'));
-        }
+                if ($searchInDescription) {
+                    $q->orWhere('ticket.description', 'LIKE', '%' . $searchTerm . '%');
+                }
 
-        /**
-         * Search conditions (properly grouped)
-         */
-        $query->where(function ($q) use (
-            $searchTerm,
-            $searchInDescription,
-            $searchInTimeregistrations,
-            $searchInComments
-        ) {
-            $like = '%' . $searchTerm . '%';
+                if ($searchInTimeregistrations) {
+                    $q->orWhereExists(function ($sub) use ($searchTerm) {
+                        $sub->selectRaw('1')
+                            ->from('zp_timesheets AS timesheet')
+                            ->whereColumn('timesheet.ticketId', 'ticket.id')
+                            ->where('timesheet.description', 'LIKE', '%' . $searchTerm . '%');
+                    });
+                }
 
-            $q->where('ticket.id', 'LIKE', $like)
-                ->orWhere('ticket.tags', 'LIKE', $like)
-                ->orWhere('ticket.headline', 'LIKE', $like);
+                if ($searchInComments) {
+                    $q->orWhereExists(function ($sub) use ($searchTerm) {
+                        $sub->selectRaw('1')
+                            ->from('zp_comment AS comment')
+                            ->whereColumn('comment.moduleId', 'ticket.id')
+                            ->where('comment.text', 'LIKE', '%' . $searchTerm . '%');
+                    });
+                }
+            })
+            ->orderBy('ticket.status', 'DESC');
 
-            if ($searchInDescription) {
-                $q->orWhere('ticket.description', 'LIKE', $like);
-            }
-
-            if ($searchInTimeregistrations) {
-                $q->orWhere('timesheet.description', 'LIKE', $like);
-            }
-
-            if ($searchInComments) {
-                $q->orWhere('comment.text', 'LIKE', $like);
-            }
-        });
-
-        return $query
-            ->orderBy('ticket.status', 'DESC')
-            ->get()
-            ->toArray();
+        return $query->get()->toArray();
     }
 
+
+
+
     /**
-     * Retrieves projects filtered by ID or name.
+     * getProjects - Retrieves projects, filters them based on their name or id
      *
-     * @return array<int, mixed>
+     * @access public
+     * @return array<int<0, max>,mixed> An array of filtered tickets with their associated details.
      */
     public function getProjects(string $searchTerm): array
     {
-        $like = '%' . $searchTerm . '%';
-
         return $this->query()
             ->from('zp_projects AS project')
             ->select([
@@ -110,12 +100,13 @@ class OmniSearch
                 'project.name',
                 'project.modified',
             ])
-            ->where(function ($q) use ($like) {
-                $q->where('project.id', 'LIKE', $like)
-                    ->orWhere('project.name', 'LIKE', $like);
+            ->where(function ($q) use ($searchTerm) {
+                $q->where('project.id', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('project.name', 'LIKE', '%' . $searchTerm . '%');
             })
             ->orderBy('project.modified', 'ASC')
             ->get()
             ->toArray();
     }
+
 }
