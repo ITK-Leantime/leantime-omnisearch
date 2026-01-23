@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-43](https://github.com/ITK-Leantime/leantime-omnisearch/pull/43)
+  Scope assets to only affect plugin code.
+
 ## [3.0.1] - 2025-04-03
 
 * [PR-41](https://github.com/ITK-Leantime/leantime-omnisearch/pull/41)

@@ -33,7 +33,10 @@
   --itk-transition-time: 0.3s;
   --itk-transition-easing: ease-in-out;
 }
-.select2-container--default .select2-search--inline .select2-search__field {
+.omni-search
+  .select2-container--default
+  .select2-search--inline
+  .select2-search__field {
   padding-left: 28px;
 }
 
@@ -172,8 +175,12 @@ div[data-tippy-root] {
   width: 100% !important;
 }
 
-.select2-container {
-  z-index: 99998;
+.omni-search .select2-container {
+  z-index: 99999;
+}
+
+.omnisearch-dropdown.select2-dropdown {
+  z-index: 99999;
 }
 
 .omni-search[data-state='default'] > .search-wrapper > span.loader {
@@ -184,18 +191,18 @@ div[data-tippy-root] {
   padding: 15px;
 }
 
-.select2-search__field {
+.omni-search .select2-search__field {
   border-radius: 0;
 }
-.select2-results__option:has(ul:empty) {
+.omnisearch-dropdown .select2-results__option:has(ul:empty) {
   display: none;
 }
-.select2-results:not(.has-results)::after {
+.omnisearch-dropdown .select2-results:not(.has-results)::after {
   display: block;
   padding: 15px;
   content: attr(data-text);
 }
-.select2-results__option-container {
+.omnisearch-dropdown .select2-results__option-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -211,11 +218,11 @@ div[data-tippy-root] {
   display: none;
 }
 
-.select2-container .select2-results__option--selected {
+.omni-search .select2-container .select2-results__option--selected {
   display: none;
 }
 
-.select2-dropdown {
+.omnisearch-dropdown.select2-dropdown {
   border-radius: 0;
   border-right: 1px solid var(--itk-border-color);
   border-bottom: 1px solid var(--itk-border-color);
@@ -223,72 +230,77 @@ div[data-tippy-root] {
   max-height: 70vh;
 }
 
-.select2-dropdown > .select2-results {
+.omnisearch-dropdown.select2-dropdown > .select2-results {
   max-height: calc(70vh - 15px);
   overflow: auto;
 }
 
-.select2-results__option--selectable {
+.omnisearch-dropdown .select2-results__option--selectable {
   display: block;
   color: black;
 }
 
-.select2-todo {
+.omnisearch-dropdown .select2-todo {
   max-width: calc(70vw - 150px);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.select2-is-done .select2-todo {
+.omnisearch-dropdown .select2-is-done .select2-todo {
   color: #64748b;
   text-decoration: line-through;
 }
 
-.select2-is-done .select2-tag {
+.omnisearch-dropdown .select2-is-done .select2-tag {
   color: #64748b;
   font-size: 12px;
 }
 
-.select2-project-name {
+.omnisearch-dropdown .select2-project-name {
   color: #64748b;
 }
 
-.select2-container--default .select2-results__group {
+.omnisearch-dropdown .select2-container--default .select2-results__group {
   padding: 10px 15px 5px;
   color: #3b444b;
   font-size: 16px;
 }
-.select2-flex-container {
+.omnisearch-dropdown .select2-flex-container {
   display: flex;
   flex-direction: column;
 }
 
-.select2-rendered__match {
+.omnisearch-dropdown .select2-rendered__match {
   color: #0284c7;
   background-color: #0284c720;
 }
 
-.select2-results__group .select2-rendered__match {
+.omnisearch-dropdown .select2-results__group .select2-rendered__match {
   color: #3b444b;
   font-weight: 300;
 }
 
-.select2-container--default .select2-results > .select2-results__options {
+.omnisearch-dropdown
+  .select2-container--default
+  .select2-results
+  > .select2-results__options {
   max-height: none;
 }
 
-.select2-container--default
+.omnisearch-dropdown
+  .select2-container--default
   .select2-results__option.select2-results__option--selectable {
   color: var(--itk-color-gray-700);
 }
 
-.select2-container--default
+.omnisearch-dropdown
+  .select2-container--default
   .select2-results__option--highlighted.select2-results__option--selectable {
   background-color: var(--itk-color-gray-100);
   color: var(--itk-color-black);
 }
 
-.select2-tag {
+.omnisearch-dropdown .select2-tag {
   border-radius: 0px;
   background-color: white;
   border: 1px solid #cbd5e1;
@@ -297,7 +309,7 @@ div[data-tippy-root] {
   color: black;
 }
 
-.select2.select2-container:after {
+.omni-search .select2.select2-container:after {
   content: attr(data-visible-selected);
   color: #000;
   position: absolute;
@@ -306,7 +318,7 @@ div[data-tippy-root] {
   font-size: 14px;
 }
 
-.js-example-basic-multiple + span.select2:before {
+.omni-search .js-example-basic-multiple + span.select2:before {
   font-family: 'Font Awesome 5 Free';
   font-weight: 900;
   content: '\f002';
@@ -317,7 +329,7 @@ div[data-tippy-root] {
   margin: auto;
   z-index: 9;
 }
-.js-example-basic-multiple.loading + span.select2:before {
+.omni-search .js-example-basic-multiple.loading + span.select2:before {
   font-family: 'Font Awesome 5 Free';
   font-weight: 900;
   content: '\f021';

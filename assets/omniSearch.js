@@ -218,6 +218,7 @@ $(document).ready(function ($) {
       omniSelectElement
         .select2({
           multiple: true,
+          dropdownCssClass: 'omnisearch-dropdown',
         })
         .on('select2:select', function (e) {
           const data = e.params.data;
@@ -312,7 +313,8 @@ $(document).ready(function ($) {
     $('body').removeClass('prevent-scroll');
     omniSelectElement.empty().trigger('change');
     $('body .omni-search').addClass('hidden');
-    $('body .select2-container').remove();
+    $('.select2-container:has(.omnisearch-dropdown)').remove();
+    $('.omnisearch-dropdown.select2-dropdown').remove();
     omniSelectPanelElement.empty();
     isVisible = false;
   }
@@ -415,6 +417,7 @@ $(document).ready(function ($) {
       .select2('destroy')
       .empty()
       .select2({
+        dropdownCssClass: 'omnisearch-dropdown',
         ajax: {
           dataType: 'json',
           url: '/OmniSearch/OmniSearch/searchTicketsAndProjects',
@@ -559,6 +562,7 @@ $(document).ready(function ($) {
       .select2('destroy')
       .empty()
       .select2({
+        dropdownCssClass: 'omnisearch-dropdown',
         data: data,
         templateResult: function (data) {
           if (isAction(data)) {

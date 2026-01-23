@@ -42,14 +42,18 @@ class GetLanguageAssets
 
         // @phpstan-ignore-next-line
         if (($language = session('usersettings.language') ?? $this->config->language) !== 'en-US') {
-            if (! Cache::store('installation')->has('omniSearch.language.' . $language)) {
-                Cache::store('installation')->put(
-                    'omniSearch.language.' . $language,
-                    parse_ini_file(__DIR__ . '/../Language/' . $language . '.ini', true)
-                );
-            }
+            $languageFile = __DIR__ . '/../Language/' . $language . '.ini';
 
-            $languageArray = array_merge($languageArray, Cache::store('installation')->get('omniSearch.language.' . $language));
+            if (file_exists($languageFile)) {
+                if (! Cache::store('installation')->has('omniSearch.language.' . $language)) {
+                    Cache::store('installation')->put(
+                        'omniSearch.language.' . $language,
+                        parse_ini_file($languageFile, true)
+                    );
+                }
+
+                $languageArray = array_merge($languageArray, Cache::store('installation')->get('omniSearch.language.' . $language));
+            }
         }
 
         Cache::put('omniSearch.languageArray', $languageArray);
