@@ -3,15 +3,12 @@
 namespace Leantime\Plugins\OmniSearch\Repositories;
 
 use Illuminate\Database\Query\Builder;
-use Leantime\Core\Db\Db;
-use Leantime\Core\Db\Db as DbCore;
 
 /**
  * OmniSearch Repository - Handles database queries relevant to OmniSearch.
  */
 class OmniSearch
 {
-    private ?DbCore $db = null;
     /**
      * Executes a database query using the specified database connection.
      *
