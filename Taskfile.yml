@@ -1,0 +1,65 @@
+version: "3"
+
+vars:
+  # https://taskfile.dev/reference/templating/
+  DOCKER_COMPOSE: '{{.TASK_DOCKER_COMPOSE | default "docker compose"}}'
+
+tasks:
+  compose:
+    desc: Run a docker compose command, e.g. task compose -- run --rm php composer install
+    cmds:
+      - "{{.DOCKER_COMPOSE}} {{.CLI_ARGS}}"
+
+  composer:install:
+    desc: Install PHP dependencies
+    cmds:
+      - task: compose
+        vars:
+          CLI_ARGS: run --rm php composer install
+
+  composer:normalize:
+    desc: Normalize composer.json
+    cmds:
+      - task: compose
+        vars:
+          CLI_ARGS: run --rm php composer normalize
+
+  install:
+    desc: Install Node.js dependencies
+    cmds:
+      - task: compose
+        vars:
+          CLI_ARGS: run --rm php npm install
+
+  dev:
+    desc: Build assets and watch for changes
+    cmds:
+      - task: compose
+        vars:
+          CLI_ARGS: run --rm php npm run dev
+
+  code-analysis:
+    desc: Run static analysis (phpstan)
+    cmds:
+      - task: compose
+        vars:
+          CLI_ARGS: run --rm php composer code-analysis
+
+  coding-standards:check:
+    desc: Run all coding standards checks
+    cmds:
+      - task: compose
+        vars:
+          CLI_ARGS: run --rm php composer coding-standards-check
+      - docker run --rm --volume "$(pwd):/work" tmknom/prettier:latest --check assets
+      - docker run --rm --volume "$(pwd):/md" itkdev/markdownlint '**/*.md'
+      - docker run --rm --volume "$(pwd):/app" --workdir /app peterdavehello/shellcheck shellcheck bin/create-release
+      - docker run --rm --volume "$(pwd):/app" --workdir /app peterdavehello/shellcheck shellcheck bin/deploy
+      - docker run --rm --volume "$(pwd):/app" --workdir /app peterdavehello/shellcheck shellcheck bin/local.create-release
+
+  coding-standards:apply:
+    desc: Apply all coding standards fixes
+    cmds:
+      - docker run --interactive --rm --volume ${PWD}:/app itkdev/php8.3-fpm:latest composer coding-standards-apply
+      - docker run --rm -v "$(pwd):/work" tmknom/prettier:latest --write assets
+      - docker run --rm --volume "$PWD:/md" itkdev/markdownlint '**/*.md' --fix
