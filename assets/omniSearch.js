@@ -464,6 +464,15 @@ $(document).ready(function ($) {
         minimumInputLength: 3,
         templateResult: function (data) {
           const term = jQuery('.select2-search__field').val() || '';
+
+          if (data.children) {
+            return $(`
+                  <div class="select2-group-header">
+                    <span>${data.text}</span>
+                    <span class="select2-group-count">${data.children.length} results</span>
+                  </div>
+                  `);
+          }
           // Tags to html, as they each need a separate span.
           let tagshtml = $('<span></span>');
           if (data.tags) {
