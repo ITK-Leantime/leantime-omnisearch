@@ -38,6 +38,13 @@ tasks:
         vars:
           CLI_ARGS: run --rm php npm run dev
 
+  build:
+    desc: Build assets
+    cmds:
+      - task: compose
+        vars:
+          CLI_ARGS: run --rm php npm run build
+
   code-analysis:
     desc: Run static analysis (phpstan)
     cmds:
