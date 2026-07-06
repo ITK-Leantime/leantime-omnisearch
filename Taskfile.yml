@@ -5,6 +5,12 @@ vars:
   DOCKER_COMPOSE: '{{.TASK_DOCKER_COMPOSE | default "docker compose"}}'
 
 tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - task --list
+    silent: true
+
   compose:
     desc: Run a docker compose command, e.g. task compose -- run --rm php composer install
     cmds:
