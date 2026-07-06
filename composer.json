@@ -32,6 +32,14 @@
             "ergebnis/composer-normalize": true,
             "metasyntactical/composer-plugin-license-check": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": {
+                "PKSA-m5cs-t1y6-qpcs": "Laravel 11.x advisory; this plugin has no runtime require, leantime/leantime is dev-only for static analysis context.",
+                "PKSA-3r5d-mb8f-1qw9": "Laravel 11.x advisory; this plugin has no runtime require, leantime/leantime is dev-only for static analysis context.",
+                "PKSA-mdq4-51ck-6kdq": "Laravel 11.x advisory; this plugin has no runtime require, leantime/leantime is dev-only for static analysis context.",
+                "PKSA-8qx3-n5y5-vvnd": "Laravel 11.x advisory; this plugin has no runtime require, leantime/leantime is dev-only for static analysis context."
+            }
         }
     },
     "scripts": {
