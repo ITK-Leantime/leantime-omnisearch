@@ -301,10 +301,8 @@ div[data-tippy-root] {
   max-height: none;
 }
 
-.omnisearch-dropdown
-.select2-results
-> .select2-results__options {
-    max-height: none;
+.omnisearch-dropdown .select2-results > .select2-results__options {
+  max-height: none;
 }
 
 .omnisearch-dropdown
