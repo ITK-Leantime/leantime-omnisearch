@@ -33,8 +33,10 @@
             "metasyntactical/composer-plugin-license-check": true,
             "php-http/discovery": true
         },
-        // Ignore Laravel 11.x advisories: leantime/leantime is dev-only for static analysis, not a runtime dependency
         "audit": {
+            "_comment": {
+                "content": "Ignore Laravel 11.x advisories: leantime/leantime is dev-only for static analysis, not a runtime dependency"
+            },
             "ignore": {
                 "PKSA-m5cs-t1y6-qpcs": "Laravel 11.x advisory; this plugin has no runtime require, leantime/leantime is dev-only for static analysis context.",
                 "PKSA-3r5d-mb8f-1qw9": "Laravel 11.x advisory; this plugin has no runtime require, leantime/leantime is dev-only for static analysis context.",
