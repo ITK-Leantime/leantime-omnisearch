@@ -1,4 +1,4 @@
-FROM itkdev/php8.4-fpm:latest
+FROM itkdev/php8.3-fpm:latest
 
 USER root
 
