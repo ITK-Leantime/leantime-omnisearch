@@ -265,6 +265,20 @@ div[data-tippy-root] {
   color: #3b444b;
   font-size: 16px;
 }
+
+.omnisearch-dropdown .select2-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--itk-spacing-md);
+}
+
+.omnisearch-dropdown .select2-group-count {
+  padding-right: var(--itk-spacing-md);
+  color: var(--itk-color-black);
+  font-size: 14px;
+  font-weight: bold;
+}
 .omnisearch-dropdown .select2-flex-container {
   display: flex;
   flex-direction: column;
@@ -284,6 +298,10 @@ div[data-tippy-root] {
   .select2-container--default
   .select2-results
   > .select2-results__options {
+  max-height: none;
+}
+
+.omnisearch-dropdown .select2-results > .select2-results__options {
   max-height: none;
 }
 

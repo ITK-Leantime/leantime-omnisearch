@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-46](https://github.com/ITK-Leantime/leantime-omnisearch/pull/46)
+  Fix trigger rule for new leantime editor.
+* [PR-45](https://github.com/ITK-Leantime/leantime-omnisearch/pull/45)
+  Taller, scrollable result dropdown and a result count per group.
+
 ## [3.0.2] - 2026-01-23
 
 * [PR-43](https://github.com/ITK-Leantime/leantime-omnisearch/pull/43)

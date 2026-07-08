@@ -1,0 +1,70 @@
+version: "3"
+
+vars:
+  # https://taskfile.dev/reference/templating/
+  DOCKER_COMPOSE: '{{.TASK_DOCKER_COMPOSE | default "docker compose"}}'
+
+tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - task --list
+    silent: true
+
+  compose:
+    desc: Run a docker compose command, e.g. task compose -- run --rm php composer install
+    cmds:
+      - "{{.DOCKER_COMPOSE}} {{.CLI_ARGS}}"
+
+  composer:install:
+    desc: Install PHP dependencies
+    cmds:
+      - docker run --interactive --rm --volume ${PWD}:/app itkdev/php8.3-fpm:latest composer install
+
+  composer:normalize:
+    desc: Normalize composer.json
+    cmds:
+      - docker run --rm --volume ${PWD}:/app itkdev/php8.3-fpm:latest composer normalize
+
+  install:
+    desc: Install Node.js dependencies
+    cmds:
+      - task: compose
+        vars:
+          CLI_ARGS: run --rm php npm install
+
+  dev:
+    desc: Build assets and watch for changes
+    cmds:
+      - task: compose
+        vars:
+          CLI_ARGS: run --rm php npm run dev
+
+  build:
+    desc: Build assets
+    cmds:
+      - task: compose
+        vars:
+          CLI_ARGS: run --rm php npm run build
+
+  code-analysis:
+    desc: Run static analysis (phpstan)
+    cmds:
+      - docker run --interactive --rm --volume ${PWD}:/app --env PHP_MEMORY_LIMIT=256M itkdev/php8.3-fpm:latest composer code-analysis
+
+  coding-standards:check:
+    desc: Run all coding standards checks
+    cmds:
+      - docker run --interactive --rm --volume ${PWD}:/app itkdev/php8.3-fpm:latest composer coding-standards-check
+      - docker run --rm -v "$(pwd):/work" tmknom/prettier:latest --check assets
+      - docker run --rm --volume "$PWD:/md" itkdev/markdownlint '**/*.md'
+      - docker run --rm --volume "$PWD:/app" --workdir /app peterdavehello/shellcheck shellcheck bin/create-release
+      - docker run --rm --volume "$PWD:/app" --workdir /app peterdavehello/shellcheck shellcheck bin/deploy
+      - docker run --rm --volume "$PWD:/app" --workdir /app peterdavehello/shellcheck shellcheck bin/local.create-release
+
+  coding-standards:apply:
+    desc: Apply all coding standards fixes
+    cmds:
+      - docker run --interactive --rm --volume ${PWD}:/app itkdev/php8.3-fpm:latest composer coding-standards-apply
+      - docker run --rm -v "$(pwd):/work" tmknom/prettier:latest --write assets
+      - docker run --rm --volume "$PWD:/md" itkdev/markdownlint '**/*.md' --fix
