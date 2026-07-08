@@ -120,6 +120,25 @@ $(document).ready(function ($) {
     return result;
   }
 
+  // Whether the keystroke happened inside a field the user is typing into, so
+  // the global "." shortcut must not fire. Covers native fields plus
+  // contenteditable rich-text editors (Tiptap/ProseMirror), which render an
+  // editable <div> rather than a textarea and are missed by an input/textarea
+  // check.
+  function isTypingContext(target) {
+    const el = target || document.activeElement;
+    if (!el || el === document.body) {
+      return false;
+    }
+    const tagName = (el.tagName || '').toLowerCase();
+    return (
+      tagName === 'input' ||
+      tagName === 'textarea' ||
+      tagName === 'select' ||
+      el.isContentEditable === true
+    );
+  }
+
   // Event for init and destroy
   $('body').on('keydown', function (e) {
     const keyCode = e.keyCode;
@@ -129,7 +148,7 @@ $(document).ready(function ($) {
         break;
 
       case key.period:
-        if (!$('input, textarea').is(':focus')) {
+        if (!isTypingContext(e.target)) {
           initOmniSearch();
           // Check if its december
           if (new Date().getMonth() === 11) {
