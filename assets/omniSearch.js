@@ -490,6 +490,15 @@ $(document).ready(function ($) {
           searching: function () {
             return translate('omnisearch.searching');
           },
+          noResults: function () {
+            return translate('omnisearch.no_results');
+          },
+          inputTooShort: function () {
+            return translate('omnisearch.input_too_short');
+          },
+          errorLoading: function () {
+            return translate('omnisearch.error_loading');
+          },
         },
         placeholder: getOmnisearchPreviewText(),
         minimumInputLength: 3,
@@ -604,6 +613,11 @@ $(document).ready(function ($) {
       .select2({
         dropdownCssClass: 'omnisearch-dropdown',
         data: data,
+        language: {
+          noResults: function () {
+            return translate('omnisearch.no_results');
+          },
+        },
         templateResult: function (data) {
           if (isAction(data)) {
             return $(`
