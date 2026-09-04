@@ -12,6 +12,12 @@ $(document).ready(function ($) {
   };
   let isVisible = false; // Is overlay visible
 
+  // Look up a translation in the dictionary exposed by /api/i18n. The plugin
+  // language files are merged into it by the GetLanguageAssets middleware.
+  function translate(key) {
+    return window.leantime?.i18n?.__(key) ?? key;
+  }
+
   // Append overlay
   $('body').append(`
       <div class="omni-search hidden">
@@ -28,17 +34,17 @@ $(document).ready(function ($) {
     content: `
       <div class="omnisearch-checkbox">
         <input type="checkbox" name="usersetting_omnisearch_searchin_beskrivelse" id="checkbox1" class="dynamic-checkbox" ${window.searchSettings.includes('usersetting_omnisearch_searchin_beskrivelse') ? 'checked' : ''}>
-        <label for="checkbox1">Søg i beskrivelse</label>
+        <label for="checkbox1">${translate('omnisearch.search_in_description')}</label>
       </div>
       <div class="omnisearch-checkbox">
         <input type="checkbox" name="usersetting_omnisearch_searchin_kommentarer" id="checkbox2" class="dynamic-checkbox" data-id="2" ${window.searchSettings.includes('usersetting_omnisearch_searchin_kommentarer') ? 'checked' : ''}>
-        <label for="checkbox2">Søg i kommentarer</label>
+        <label for="checkbox2">${translate('omnisearch.search_in_comments')}</label>
       </div>
       <div class="omnisearch-checkbox">
         <input type="checkbox" name="usersetting_omnisearch_searchin_tidsregistreringer" id="checkbox3" class="dynamic-checkbox" data-id="3" ${window.searchSettings.includes('usersetting_omnisearch_searchin_tidsregistreringer') ? 'checked' : ''}>
-        <label for="checkbox3">Søg i tidslogninger</label>
+        <label for="checkbox3">${translate('omnisearch.search_in_timeregistrations')}</label>
       </div>
-      <button class="omnisearch-settings-save">Gem</button>
+      <button class="omnisearch-settings-save">${translate('omnisearch.save')}</button>
     `,
     allowHTML: true,
     trigger: 'click',
@@ -76,7 +82,7 @@ $(document).ready(function ($) {
           : $(document).find('.settings-button').removeClass('active');
         settingsTippy[0].hide();
         setTimeout(() => {
-          $(e.target).html('Gem');
+          $(e.target).html(translate('omnisearch.save'));
         }, 500);
       },
       error: function (error) {
@@ -199,22 +205,22 @@ $(document).ready(function ($) {
   });
 
   function getOmnisearchPreviewText() {
-    // Extract and format the readable parts of the array
-    const readableFields = window.searchSettings.map((field) =>
-      field.split('_').pop()
-    );
+    // The fields that are always searched, plus a translated label for each
+    // enabled search setting (keyed by the last part of the setting name).
+    const fields = [
+      translate('omnisearch.field_id'),
+      translate('omnisearch.field_title'),
+      translate('omnisearch.field_projectname'),
+      translate('omnisearch.field_tags'),
+      ...window.searchSettings.map((setting) =>
+        translate('omnisearch.field_' + setting.split('_').pop())
+      ),
+    ];
 
-    let previewText;
+    const lastField = fields.pop();
+    const fieldList = `${fields.join(', ')} ${translate('omnisearch.and')} ${lastField}`;
 
-    if (readableFields.length === 0) {
-      previewText = 'Du søger nu i ID, titel, projektnavn og tags.';
-    } else if (readableFields.length === 1) {
-      previewText = `Du søger nu i ID, titel, projektnavn, tags og ${readableFields[0]}.`;
-    } else {
-      const lastField = readableFields.pop();
-      previewText = `Du søger nu i ID, titel, projektnavn, tags, ${readableFields.join(', ')}, og ${lastField}.`;
-    }
-    return previewText;
+    return translate('omnisearch.search_preview').replace('%s', fieldList);
   }
 
   // Init select2, get data, set events.
@@ -306,13 +312,19 @@ $(document).ready(function ($) {
           case 'bug':
             $(omniSelectElement)
               .next('.select2.select2-container')
-              .attr('data-visible-selected', `To-do / ${text} /`);
+              .attr(
+                'data-visible-selected',
+                `${translate('omnisearch.group_todos')} / ${text} /`
+              );
             break;
 
           case 'project':
             $(omniSelectElement)
               .next('.select2.select2-container')
-              .attr('data-visible-selected', `Projekter / ${text} /`);
+              .attr(
+                'data-visible-selected',
+                `${translate('omnisearch.group_projects')} / ${text} /`
+              );
             break;
         }
 
@@ -347,17 +359,17 @@ $(document).ready(function ($) {
         reinitOmniSearchWithData([
           {
             id: '',
-            text: 'Actions',
+            text: translate('omnisearch.actions'),
             children: [
               {
                 id: data.id,
-                text: 'Open',
+                text: translate('omnisearch.action_open'),
                 type: 'taskAction' || 'projectAction',
                 action: 'goto',
               },
               {
                 id: data.id,
-                text: 'Log Time',
+                text: translate('omnisearch.action_logtime'),
                 type: 'taskAction' || 'projectAction',
                 action: 'logtime',
               },
@@ -370,17 +382,17 @@ $(document).ready(function ($) {
         reinitOmniSearchWithData([
           {
             id: '',
-            text: 'Actions',
+            text: translate('omnisearch.actions'),
             children: [
               {
                 id: data.id,
-                text: 'Go to',
+                text: translate('omnisearch.action_goto'),
                 type: 'projectAction',
                 action: 'goto',
               },
               {
                 id: data.id,
-                text: 'Create To-Do',
+                text: translate('omnisearch.action_create_todo'),
                 type: 'projectAction',
                 action: 'createnew',
               },
@@ -459,12 +471,12 @@ $(document).ready(function ($) {
               results: [
                 {
                   id: 'project',
-                  text: 'Projekter',
+                  text: translate('omnisearch.group_projects'),
                   children: data['projects'],
                   index: 1,
                 },
                 {
-                  text: 'Todo',
+                  text: translate('omnisearch.group_todos'),
                   id: 'task',
                   children: data['tickets'],
                   index: 2,
@@ -476,7 +488,16 @@ $(document).ready(function ($) {
         },
         language: {
           searching: function () {
-            return 'Søger... Hvis det tager lang tid, kan du overveje at slå søgning i tidsregistreringer fra.';
+            return translate('omnisearch.searching');
+          },
+          noResults: function () {
+            return translate('omnisearch.no_results');
+          },
+          inputTooShort: function () {
+            return translate('omnisearch.input_too_short');
+          },
+          errorLoading: function () {
+            return translate('omnisearch.error_loading');
           },
         },
         placeholder: getOmnisearchPreviewText(),
@@ -488,7 +509,7 @@ $(document).ready(function ($) {
             return $(`
                   <div class="select2-group-header">
                     <span>${data.text}</span>
-                    <span class="select2-group-count">${data.children.length} results</span>
+                    <span class="select2-group-count">${data.children.length} ${translate('omnisearch.results')}</span>
                   </div>
                   `);
           }
@@ -592,6 +613,11 @@ $(document).ready(function ($) {
       .select2({
         dropdownCssClass: 'omnisearch-dropdown',
         data: data,
+        language: {
+          noResults: function () {
+            return translate('omnisearch.no_results');
+          },
+        },
         templateResult: function (data) {
           if (isAction(data)) {
             return $(`

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-49](https://github.com/ITK-Leantime/leantime-omnisearch/pull/49)
+  Extracted hardcoded UI strings to the language files and translated the
+  previously untranslated action/group labels and select2 built-in messages.
+  Added an en-GB language file matching en-US.
+  Scoped the language cache per language and plugin version.
+
 ## [3.1.0] - 2026-07-08
 
 * [PR-46](https://github.com/ITK-Leantime/leantime-omnisearch/pull/46)
