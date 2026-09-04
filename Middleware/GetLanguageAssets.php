@@ -29,34 +29,29 @@ class GetLanguageAssets
      **/
     public function handle(IncomingRequest $request, Closure $next): Response
     {
-
-        $languageArray = Cache::get('omniSearch.languageArray', []);
-
-        if (!empty($languageArray)) {
-            $this->language->ini_array = array_merge($this->language->ini_array, $languageArray);
-            return $next($request);
-        }
-        if (! Cache::store('installation')->has('omniSearch.language.en-US')) {
-            $languageArray += parse_ini_file(__DIR__ . '/../Language/en-US.ini', true);
-        }
-
         // @phpstan-ignore-next-line
-        if (($language = session('usersettings.language') ?? $this->config->language) !== 'en-US') {
-            $languageFile = __DIR__ . '/../Language/' . $language . '.ini';
+        $language = session('usersettings.language') ?? $this->config->language;
 
-            if (file_exists($languageFile)) {
-                if (! Cache::store('installation')->has('omniSearch.language.' . $language)) {
-                    Cache::store('installation')->put(
-                        'omniSearch.language.' . $language,
-                        parse_ini_file($languageFile, true)
-                    );
+        // The cache key must vary by language (a shared key would leak the
+        // first user's language to everyone) and by plugin version, so new
+        // language keys show up after an update without a manual cache clear.
+        $cacheKey = 'omniSearch.languageArray.' . urlencode('%%VERSION%%') . '.' . $language;
+
+        $languageArray = Cache::get($cacheKey, []);
+
+        if (empty($languageArray)) {
+            $languageArray = parse_ini_file(__DIR__ . '/../Language/en-US.ini', true);
+
+            if ($language !== 'en-US') {
+                $languageFile = __DIR__ . '/../Language/' . $language . '.ini';
+
+                if (file_exists($languageFile)) {
+                    $languageArray = array_merge($languageArray, parse_ini_file($languageFile, true));
                 }
-
-                $languageArray = array_merge($languageArray, Cache::store('installation')->get('omniSearch.language.' . $language));
             }
-        }
 
-        Cache::put('omniSearch.languageArray', $languageArray);
+            Cache::put($cacheKey, $languageArray);
+        }
 
         $this->language->ini_array = array_merge($this->language->ini_array, $languageArray);
         return $next($request);

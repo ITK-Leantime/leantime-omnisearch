@@ -59,7 +59,7 @@ class OmniSearch extends Controller
                 $savedSuccessfully = $this->userService->updateUserSettings('omnisearch', $id, $enabled);
 
                 if (!$savedSuccessfully) {
-                    return new JsonResponse(['error' => 'An error occurred while saving the setting for: ' . $id], 400);
+                    return new JsonResponse(['error' => sprintf($this->language->__('omnisearch.setting_save_error'), $id)], 400);
                 }
             }
         }
