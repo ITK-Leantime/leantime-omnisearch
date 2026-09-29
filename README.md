@@ -87,9 +87,8 @@ docker run --interactive --rm --volume ${PWD}:/app itkdev/php8.3-fpm:latest comp
 docker compose build && docker compose run --rm php bin/create-release dev-test
 ```
 
-The create-release script replaces `@@VERSION@@` in
-[register.php](https://github.com/ITK-Leantime/leantime-omnisearch/blob/develop/register.php#L13) and
-[Services/OmniSearch.php](https://github.com/ITK-Leantime/leantime-omnisearch/blob/develop/Services/OmniSearch.php#L12)
+The create-release script replaces `%%VERSION%%` in
+[register.php](https://github.com/ITK-Leantime/leantime-omnisearch/blob/develop/register.php)
 with the tag provided (in the above it is `dev-test`).
 
 ## Deploy

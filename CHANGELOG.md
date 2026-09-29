@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-50](https://github.com/ITK-Leantime/leantime-omnisearch/pull/50)
+  Symlink the JS bundle to a stable `public/dist/js/omniSearch.js` and put the version in a `?v=` query string,
+  so plugin updates no longer require reinstalling the plugin to create a new symlink.
+
 ## [3.1.0] - 2026-07-08
 
 * [PR-46](https://github.com/ITK-Leantime/leantime-omnisearch/pull/46)
