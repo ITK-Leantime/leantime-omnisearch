@@ -17,8 +17,20 @@ EventDispatcher::add_event_listener(
         if (session('userdata.id') !== null) {
             $userId  = session('userdata.id');
             $searchSettings = session('usersettings.omnisearch') ?: [];
+
+            // %%VERSION%% is substituted during release packaging. In dev the
+            // placeholder is left as-is, which would freeze the URL and let the
+            // browser cache forever; fall back to the bundle's mtime so every
+            // rebuild produces a fresh URL.
+            $jsPath = __DIR__ . '/dist/js/omniSearch.js';
+            $jsVersion = '%%VERSION%%';
+            if ($jsVersion === '%' . '%VERSION%' . '%' && is_file($jsPath)) {
+                $jsVersion = (string) filemtime($jsPath);
+            }
+            $jsUrl = '/dist/js/omniSearch.js?' . http_build_query(['v' => $jsVersion]);
+
             echo '<script>const omniSearch = ' . json_encode(['settings' => ['userId' => $userId, 'searchSettings' => $searchSettings]]) . '</script>';
-            echo '<script src="/dist/js/omniSearch.v' . urlencode('%%VERSION%%') . '.js"></script>';
+            echo '<script src="' . htmlspecialchars($jsUrl) . '"></script>';
         }
     },
     5

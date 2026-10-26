@@ -27,7 +27,7 @@ final class OmniSearch
      */
     private static array $assets = [
         // source => target
-        __DIR__ . '/../dist/js/omniSearch.js' => APP_ROOT . '/public/dist/js/omniSearch.v%%VERSION%%.js',
+        __DIR__ . '/../dist/js/omniSearch.js' => APP_ROOT . '/public/dist/js/omniSearch.js',
     ];
 
     /**
@@ -92,10 +92,19 @@ final class OmniSearch
     public function install(): void
     {
         foreach (static::$assets as $source => $target) {
-            if (file_exists($target)) {
+            $targetDir = dirname($target);
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
+
+            // Remove any existing file or broken symlink at the target path.
+            if (file_exists($target) || is_link($target)) {
                 unlink($target);
             }
-            symlink($source, $target);
+
+            if (file_exists($source)) {
+                symlink($source, $target);
+            }
         }
     }
 
@@ -107,7 +116,7 @@ final class OmniSearch
     public function uninstall(): void
     {
         foreach (static::$assets as $target) {
-            if (file_exists($target)) {
+            if (file_exists($target) || is_link($target)) {
                 unlink($target);
             }
         }
